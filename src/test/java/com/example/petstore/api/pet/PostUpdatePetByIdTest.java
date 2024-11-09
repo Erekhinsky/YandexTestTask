@@ -1,6 +1,5 @@
 package com.example.petstore.api.pet;
 
-import com.example.petstore.api.specification.Specifications;
 import com.example.petstore.client.PetClient;
 import com.example.petstore.data.entities.Category;
 import com.example.petstore.data.entities.Pet;
@@ -17,10 +16,8 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 
 public class PostUpdatePetByIdTest {
-
     private static final String URL = "https://petstore.swagger.io/v2/pet";
     private static PetClient petClient;
-
     private final Pet pet = new Pet(1230L, new Category(123, "cats"), "Kochka", List.of("string"), List.of(new Tag(123, "cats")), PetStatus.AVAILABLE);
 
     @BeforeAll
@@ -30,10 +27,7 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updatePet200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Response response = petClient.addPet(pet);
-        response.prettyPrint();
 
         String updName = "updatedName";
         PetStatus updStatus = PetStatus.PENDING;
@@ -50,13 +44,13 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updatePetWithoutStatus200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
 
         petClient.addPet(pet);
 
         String updName = "updatedNameWithoutStatus";
 
         Response response = given()
+                .baseUri(URL)
                 .contentType(ContentType.URLENC)
                 .param("name", updName)
                 .post("/" + pet.getId())
@@ -73,8 +67,6 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updatePetInvalidPetId405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         String updName = "updatedNameWithInvalidPetId";
         PetStatus updStatus = PetStatus.PENDING;
 
@@ -83,8 +75,6 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updateNoPet404Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
         petClient.deleteById(pet.getId(), "special-key");
 
@@ -97,11 +87,10 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updatePetInvalidName405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         PetStatus updStatus = PetStatus.SOLD;
 
         Assertions.assertEquals(405, given()
+                .baseUri(URL)
                 .contentType(ContentType.URLENC)
                 .param("status", updStatus)
                 .post("/" + pet.getId())
@@ -111,8 +100,6 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updatePetInvalidStatus405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         String updName = "updatedNameErr";
 
         Assertions.assertEquals(405, petClient.updatePetById(pet.getId(), updName, "updStatus").getStatusCode());
@@ -120,12 +107,11 @@ public class PostUpdatePetByIdTest {
 
     @Test
     public void updatePetWithoutPetId405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         String updName = "updatedNameErr";
         PetStatus updStatus = PetStatus.SOLD;
 
         Assertions.assertEquals(405, given()
+                .baseUri(URL)
                 .contentType(ContentType.URLENC)
                 .param("name", updName)
                 .param("status", updStatus)

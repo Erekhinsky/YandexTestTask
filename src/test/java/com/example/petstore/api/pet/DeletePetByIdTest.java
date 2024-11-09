@@ -1,6 +1,5 @@
 package com.example.petstore.api.pet;
 
-import com.example.petstore.api.specification.Specifications;
 import com.example.petstore.client.PetClient;
 import com.example.petstore.data.entities.Category;
 import com.example.petstore.data.entities.Pet;
@@ -16,10 +15,8 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 
 public class DeletePetByIdTest {
-
     private static final String URL = "https://petstore.swagger.io/v2/pet";
     private static PetClient petClient;
-
     private final Pet pet = new Pet(1230L, new Category(123, "cats"), "Kochka", List.of("string"), List.of(new Tag(123, "cats")), PetStatus.AVAILABLE);
 
     @BeforeAll
@@ -29,8 +26,6 @@ public class DeletePetByIdTest {
 
     @Test
     public void deletePet200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
         Assertions.assertEquals(200, petClient.getPetById(pet.getId()).statusCode());
 
@@ -44,12 +39,11 @@ public class DeletePetByIdTest {
 
     @Test
     public void deletePetWithoutKey200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
         Assertions.assertEquals(200, petClient.getPetById(pet.getId()).statusCode());
 
         Response response = given()
+                .baseUri(URL)
                 .delete("/" + pet.getId())
                 .then()
                 .extract().response();
@@ -61,10 +55,9 @@ public class DeletePetByIdTest {
 
     @Test
     public void deletePetWithoutPetId405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
-        Assertions.assertEquals(405, given().
-                header("api_key", "special-key")
+        Assertions.assertEquals(405, given()
+                .header("api_key", "special-key")
+                .baseUri(URL)
                 .delete()
                 .then()
                 .extract().response().getStatusCode());
@@ -72,15 +65,11 @@ public class DeletePetByIdTest {
 
     @Test
     public void deletePetInvalidPetId405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Assertions.assertEquals(405, petClient.deleteById("petId", "special-key").statusCode());
     }
 
     @Test
     public void deleteNoPet404Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
         Assertions.assertEquals(200, petClient.getPetById(pet.getId()).statusCode());
         petClient.deleteById(pet.getId(), "special-key");

@@ -1,19 +1,22 @@
 package com.example.petstore.data.entities;
 
 import com.example.petstore.data.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class Order {
 
-    private Integer id;
-    private Integer petId;
+    private Long id;
+    private Long petId;
     private Integer quantity;
-    private String shipDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private OffsetDateTime shipDate;
     private OrderStatus status;
     private Boolean complete;
 
-    public Order(Integer id, Integer petId, Integer quantity, String shipDate, OrderStatus status, Boolean complete) {
+    public Order(Long id, Long petId, Integer quantity, OffsetDateTime shipDate, OrderStatus status, Boolean complete) {
         this.id = id;
         this.petId = petId;
         this.quantity = quantity;
@@ -22,19 +25,29 @@ public class Order {
         this.complete = complete;
     }
 
-    public Integer getId() {
+    public Order(Long petId, Integer quantity, OffsetDateTime shipDate, OrderStatus status, Boolean complete) {
+        this.petId = petId;
+        this.quantity = quantity;
+        this.shipDate = shipDate;
+        this.status = status;
+        this.complete = complete;
+    }
+
+    public Order() {}
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getPetId() {
+    public Long getPetId() {
         return petId;
     }
 
-    public void setPetId(Integer petId) {
+    public void setPetId(Long petId) {
         this.petId = petId;
     }
 
@@ -46,11 +59,11 @@ public class Order {
         this.quantity = quantity;
     }
 
-    public String getShipDate() {
+    public OffsetDateTime getShipDate() {
         return shipDate;
     }
 
-    public void setShipDate(String shipDate) {
+    public void setShipDate(OffsetDateTime shipDate) {
         this.shipDate = shipDate;
     }
 

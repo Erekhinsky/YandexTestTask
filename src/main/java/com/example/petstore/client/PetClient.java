@@ -13,8 +13,11 @@ import static io.restassured.RestAssured.given;
 
 public class PetClient {
 
+    private static final String URL = "https://petstore.swagger.io/v2/pet";
+
     public Response getPetById(Object petId) {
         return given()
+                .baseUri(URL)
                 .get("/" + petId)
                 .then()
                 .extract().response();
@@ -22,6 +25,7 @@ public class PetClient {
 
     public Response addPet(Object pet) {
         return given()
+                .baseUri(URL)
                 .contentType(ContentType.JSON)
                 .body(pet)
                 .post()
@@ -31,6 +35,7 @@ public class PetClient {
 
     public Response addPetFromJson(String path) {
         return given()
+                .baseUri(URL)
                 .contentType(ContentType.JSON)
                 .body(new File(path))
                 .post()
@@ -40,6 +45,7 @@ public class PetClient {
 
     public Response updatePetById(Object petId, Object name, Object status) {
         return given()
+                .baseUri(URL)
                 .contentType(ContentType.URLENC)
                 .param("name", name)
                 .param("status", status)
@@ -50,6 +56,7 @@ public class PetClient {
 
     public Response getByStatuses(Object statuses) {
         return given()
+                .baseUri(URL)
                 .queryParam("status", statuses)
                 .get("/findByStatus")
                 .then()
@@ -58,6 +65,7 @@ public class PetClient {
 
     public Response uploadImageById(Object petId, Object additionalMetadata, Object imagePath) {
         return given()
+                .baseUri(URL)
                 .contentType(ContentType.MULTIPART)
                 .multiPart(new File(imagePath.toString()))
                 .multiPart("additionalMetadata", additionalMetadata)
@@ -68,6 +76,7 @@ public class PetClient {
 
     public Response putPet(Object pet) {
         return given()
+                .baseUri(URL)
                 .contentType(ContentType.JSON)
                 .body(pet)
                 .put()
@@ -77,6 +86,7 @@ public class PetClient {
 
     public Response putPetFromJson(Object path) {
         return given()
+                .baseUri(URL)
                 .contentType(ContentType.JSON)
                 .body(new File(path.toString()))
                 .put()
@@ -85,8 +95,9 @@ public class PetClient {
     }
 
     public Response deleteById(Object petId, Object apiKey) {
-        return given().
-                header("api_key", apiKey)
+        return given()
+                .header("api_key", apiKey)
+                .baseUri(URL)
                 .delete("/" + petId)
                 .then()
                 .extract().response();

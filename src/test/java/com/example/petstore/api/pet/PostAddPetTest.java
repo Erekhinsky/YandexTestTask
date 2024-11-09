@@ -1,6 +1,5 @@
 package com.example.petstore.api.pet;
 
-import com.example.petstore.api.specification.Specifications;
 import com.example.petstore.client.PetClient;
 import com.example.petstore.data.entities.Category;
 import com.example.petstore.data.entities.Pet;
@@ -16,7 +15,6 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 
 public class PostAddPetTest {
-
     private static final String URL = "https://petstore.swagger.io/v2/pet";
     private static final String PET_JSON_PATH = "src/test/resources/api/json/pet/";
     private static PetClient petClient;
@@ -30,13 +28,10 @@ public class PostAddPetTest {
 
     @Test
     public void addPet200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.deleteById(pet.getId(), "special-key");
 
         Response response = petClient.addPet(pet);
         Pet tempPet = petClient.petFromResponse(response);
-        response.prettyPrint();
 
         Assertions.assertEquals(200, response.getStatusCode());
         Assertions.assertEquals(pet, tempPet);
@@ -44,8 +39,6 @@ public class PostAddPetTest {
 
     @Test
     public void addPetWithoutId200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         pet.setId(null);
         Response response = petClient.addPet(pet);
         Pet tempPet = petClient.petFromResponse(response);
@@ -58,8 +51,6 @@ public class PostAddPetTest {
 
     @Test
     public void addPetAgain200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.deleteById(pet.getId(), "special-key");
         String newName = "Kotka";
 
@@ -76,8 +67,6 @@ public class PostAddPetTest {
 
     @Test
     public void addPetNegativeId200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         long newId = -1230L;
         pet.setId(newId);
         petClient.deleteById(pet.getId(), "special-key");
@@ -93,44 +82,33 @@ public class PostAddPetTest {
 
     @Test
     public void addPetInvalidPetId400Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Assertions.assertEquals(400, petClient.addPetFromJson(PET_JSON_PATH + "brokePetId.json").getStatusCode());
     }
 
     @Test
     public void addPetInvalidJson400Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Assertions.assertEquals(400, petClient.addPetFromJson(PET_JSON_PATH + "brokeJson.json").getStatusCode());
     }
 
     @Test
     public void addPetInvalidName405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Assertions.assertEquals(405, petClient.addPetFromJson(PET_JSON_PATH + "brokeName.json").getStatusCode());
     }
 
     @Test
     public void addPetInvalidPhotoUrls405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Assertions.assertEquals(405, petClient.addPetFromJson(PET_JSON_PATH + "brokePhotoUrls.json").getStatusCode());
     }
 
     @Test
     public void addPetInvalidStatus405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
-        Assertions.assertEquals(405, petClient.addPetFromJson(PET_JSON_PATH + "brokePhotoUrls.json").getStatusCode());
+        Assertions.assertEquals(405, petClient.addPetFromJson(PET_JSON_PATH + "brokeStatus.json").getStatusCode());
     }
 
     @Test
     public void addPetWithoutBody405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         Assertions.assertEquals(405, given()
+                .baseUri(URL)
                 .post()
                 .then()
                 .extract().response().getStatusCode());

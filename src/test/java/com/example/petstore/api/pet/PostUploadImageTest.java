@@ -1,6 +1,5 @@
 package com.example.petstore.api.pet;
 
-import com.example.petstore.api.specification.Specifications;
 import com.example.petstore.client.PetClient;
 import com.example.petstore.data.entities.Category;
 import com.example.petstore.data.entities.Pet;
@@ -18,7 +17,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PostUploadImageTest {
-
     private static final String URL = "https://petstore.swagger.io/v2/pet";
     private static final String PET_IMAGE_PATH = "src/test/resources/api/image/";
     private static PetClient petClient;
@@ -32,8 +30,6 @@ public class PostUploadImageTest {
 
     @Test
     public void uploadImage200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
 
         String imageName = "animal.png";
@@ -52,11 +48,10 @@ public class PostUploadImageTest {
 
     @Test
     public void uploadImageOnlyPetId200Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
 
         Response response = given()
+                .baseUri(URL)
                 .post("/" + pet.getId() + "/uploadImage")
                 .then()
                 .extract().response();
@@ -67,8 +62,6 @@ public class PostUploadImageTest {
 
     @Test
     public void uploadImageInvalidPetId405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         String imageName = "blackCat.jpg";
         String additionalMetadata = "testData";
 
@@ -77,12 +70,11 @@ public class PostUploadImageTest {
 
     @Test
     public void uploadImageWithoutPetId405Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         String imageName = "blackCat.jpg";
         String additionalMetadata = "testData";
 
         Assertions.assertEquals(405, given()
+                .baseUri(URL)
                 .multiPart(new File(PET_IMAGE_PATH + imageName))
                 .multiPart("additionalMetadata", additionalMetadata)
                 .post()
@@ -92,8 +84,6 @@ public class PostUploadImageTest {
 
     @Test
     public void uploadImageNoPet404Test() {
-        Specifications.initRequestSpecification(Specifications.requestSpecification(URL));
-
         petClient.addPet(pet);
         petClient.deleteById(pet.getId(), "special-key");
 

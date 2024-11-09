@@ -1,5 +1,8 @@
 package com.example.petstore.data.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum OrderStatus {
     PLACED("placed"),
     APPROVED("approved"),
@@ -11,12 +14,17 @@ public enum OrderStatus {
         this.status = status;
     }
 
+    @JsonValue
     public String getStatus() {
         return status;
     }
 
-    @Override
-    public String toString() {
-        return status;
+    @JsonCreator
+    public static OrderStatus fromValue(String value) {
+        for (OrderStatus status : OrderStatus.values())
+            if (status.status.equalsIgnoreCase(value))
+                return status;
+
+        throw new IllegalArgumentException("Unknown status: " + value);
     }
 }
